@@ -43,16 +43,18 @@ def verification(request):
         print('correct_code:', correct_code)
 
         # 数据库验证
-        user = User.objects.filter(phonenum=phonenum)
+        user = User.objects.filter(phonenum=phonenum).first()
         if not user:
             if code == correct_code:
                 obj = User()
                 obj.phonenum = phonenum
                 obj.nickname = phonenum
                 obj.save()
+                request.session['uid'] = obj.id
                 return HttpResponse('登陆注册成功！')
         else:
             if code == correct_code:
+                request.session['uid'] = user.id
                 return HttpResponse('登陆成功！')
 
     return HttpResponse("请求方式错误！")
@@ -99,11 +101,6 @@ class user_info(View):
         else:
             return HttpResponse("修改失败！")
 
-
-
-
-
-        return HttpResponse("psot")
 
 
 
