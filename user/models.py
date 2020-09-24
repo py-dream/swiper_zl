@@ -19,10 +19,18 @@ class User(models.Model):
 
     phonenum = models.CharField(max_length=16, unique=True, verbose_name='手机号')
     nickname = models.CharField(max_length=20, db_index=True, verbose_name='昵称')
-    gender = models.CharField(max_length=10, choices=GENDERS, verbose_name='性别')
+    gender = models.CharField(max_length=10, choices=GENDERS,default='male', verbose_name='性别')
     birthday = models.DateField(default='2002-01-01', verbose_name='出生日')
     avatar = models.CharField(max_length=256, verbose_name='个人形象')
-    location = models.CharField(max_length=10, choices=LOCATIONS, verbose_name='常居地')
+    location = models.CharField(max_length=10, choices=LOCATIONS,default='上海',verbose_name='常居地')
+
+    @property
+    def get_my_profile(self):
+        '''当前用户对应的Profile'''
+        if not hasattr(self,'_profile'):
+            self._profile, _ = Profile.objects.get_or_create(id=self.id)
+        return self._profile
+
 
     def to_dict(self):
         return {
@@ -35,9 +43,11 @@ class User(models.Model):
             'location': self.location,
         }
 class Profile(models.Model):
-    dating_location = models.CharField(max_length=10,choices=User.LOCATIONS,verbose_name='⽬标城市')
+    '''用户交友资料'''
 
-    dating_gender = models.CharField(max_length=10,choices=User.GENDERS,verbose_name='匹配的性别')
+    dating_location = models.CharField(max_length=10,choices=User.LOCATIONS,default='上海',verbose_name='⽬标城市')
+
+    dating_gender = models.CharField(max_length=10,choices=User.GENDERS,default='female',verbose_name='匹配的性别')
 
     min_distance = models.IntegerField(default=1,verbose_name='最⼩查找范围')
     max_distance = models.IntegerField(default=50,verbose_name='最⼤查找范围')
