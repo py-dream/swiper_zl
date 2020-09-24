@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'swiper_zl.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'swiper',
+        'NAME': 'last',
         'USER': 'root',
-        'PASSWORD': 'mysql',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'llj19960329',
+        'HOST': '59.110.41.9',
         'PORT': '3306',
     }
 }
@@ -105,29 +105,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        # linux:  'LOCATION': 'redis://:你的密码@服务器地址:6379/0',
-        #  'LOCATION': 'redis://服务器地址:6379/0',
-        'LOCATION': 'redis://127.0.0.1:6379/0',
-        # redis-cli
-        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'}
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         # linux:  'LOCATION': 'redis://:你的密码@服务器地址:6379/0',
+#         #  'LOCATION': 'redis://服务器地址:6379/0',
+#         'LOCATION': 'redis://127.0.0.1:6379/0',
+#         # redis-cli
+#         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'}
+#     }
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
