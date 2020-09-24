@@ -3,7 +3,9 @@ from django.core.cache import cache
 
 from user.logics import send_vcode
 from user.models import User
-
+from user.models import Profile
+from user.forms import UserForm
+from user.forms import ProfileForm
 
 def fetch_vcode(request):
     '''给用户发送验证码'''
@@ -40,12 +42,27 @@ def submit_vcode(request):
 
 def show_profile(request):
     '''查看个人资料'''
-    return JsonResponse()
+    uid = request.session['uid']
+    profile = User.objects.get_or_create(id=uid)
+    return JsonResponse({'code':0,'data':profile.to_dict()})
 
 
 def update_profile(request):
     '''更新个人资料'''
-    return JsonResponse()
+
+    # 定义form对象
+    user_form = UserForm(request.POST)
+    profile_form = ProfileForm(request.POST)
+
+    # 检查验证对象
+    if user_form.is_valid() and profile_form.is_valid():
+
+        return JsonResponse({'code':0})
+    else:
+        err = {}
+        err.update(user_form.errors)
+        err.update(profile_form.errors)
+        return JsonResponse({'code':1003,'data':err})
 
 
 def qn_token(request):

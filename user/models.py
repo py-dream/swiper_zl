@@ -31,7 +31,6 @@ class User(models.Model):
             self._profile, _ = Profile.objects.get_or_create(id=self.id)
         return self._profile
 
-
     def to_dict(self):
         return {
             'id': self.id,
@@ -58,3 +57,17 @@ class Profile(models.Model):
     vibration = models.BooleanField(default=True,verbose_name='开启震动')
     only_matched = models.BooleanField(default=True,verbose_name='不让陌⽣⼈看我的相册')
     auto_play = models.BooleanField(default=True,verbose_name='⾃动播放视频')
+
+    def to_dict(self):
+        return {
+            'id':self.id,
+            'dating_location':self.dating_location,
+            'dating_gender':self.dating_gender,
+            'min_distance':self.min_distance,
+            'max_distance':self.max_distance,
+            'min_dating_age':self.min_dating_age,
+            'max_dating_age':self.max_dating_age,
+            'vibration':self.vibration,
+            'only_matched':self.only_matched,
+            'auto_play':self.auto_play,
+            }
