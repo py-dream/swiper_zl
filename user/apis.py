@@ -56,8 +56,12 @@ def update_profile(request):
 
     # 检查验证对象
     if user_form.is_valid() and profile_form.is_valid():
+        uid = request.session['uid']
+        user = User.objects.get(id=uid)
+        User.objects.filter(id=uid).update(**user_form.cleaned_data)
+        Profile.objects.update_or_create(id = uid,defaults=profile_form.cleaned_data)
 
-        return JsonResponse({'code':0})
+        return JsonResponse({'code':0,'data':None})
     else:
         err = {}
         err.update(user_form.errors)
