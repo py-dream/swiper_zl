@@ -8,6 +8,9 @@ from user.forms import UserForm
 from user.forms import ProfileForm
 from libs.qn_cloud import get_token
 from libs.qn_cloud import get_res_url
+from common import errors
+from common import keys
+
 
 def fetch_vcode(request):
     '''给用户发送验证码'''

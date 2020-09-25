@@ -1,5 +1,13 @@
 '''程序逻辑配置，及第三方平台配置'''
 
+REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 2,
+}
+
+
+
 # 赛迪云通信设置
 SD_APPID = '54746'
 SD_APPKEY = 'bd320103469119c56b00a678d0029bcc'
