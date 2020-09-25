@@ -1,14 +1,16 @@
 from django.http import JsonResponse
 from django.core.cache import cache
 
+from libs.qn_cloud import gen_token, get_res_url
+from user.forms import UserForm, ProfileForm
 from user.logics import send_vcode
-from user.models import User
+from user.models import User, Profile
 
 
 def fetch_vcode(request):
     '''给用户发送验证码'''
     phonenum = request.GET.get('phonenum')
-    print("电话：",phonenum)
+    print("电话：", phonenum)
     if send_vcode(phonenum):
         return JsonResponse({'code': 0, 'data': None})
     else:
@@ -40,19 +42,48 @@ def submit_vcode(request):
 
 def show_profile(request):
     '''查看个人资料'''
-    return JsonResponse()
+    uid = request.session.get('uid')
+    profilem, _ = Profile.objects.get_or_create(id=uid)
+    data = profilem.to_dict()
+    return JsonResponse({'code': 0, 'data': data})
 
 
 def update_profile(request):
     '''更新个人资料'''
-    return JsonResponse()
+
+    userform = UserForm(request.POST)
+    profileform = ProfileForm(request.POST)
+    if userform.is_valid() and profileform.is_valid():
+        uid = request.session.get('uid')
+        User.objects.filter(id=uid).update(**userform.cleaned_data)
+        Profile.objects.get_or_create(id=uid, defaults=profileform.cleaned_data)
+        return JsonResponse({'code': 0})
+    error = {}
+    error.update(userform.errors)
+    error.update(profileform.errors)
+    return JsonResponse({'code': 1003, 'data': error})
 
 
 def qn_token(request):
     '''获取七牛云 Token'''
-    return JsonResponse()
+    uid = request.session['uid']
+    filename = f'Avatar-{uid}'
+    token = gen_token(uid, filename)
+    return JsonResponse({
+        'code': 0,
+        'data': {
+            'token': token,
+            'key': filename,
+        }
+    })
+
 
 
 def qn_callback(request):
     '''七牛云回调接口'''
-    return JsonResponse()
+    uid = request.POST.get('uid')
+    key = request.POST.get('key')
+    avatar_url = get_res_url(key)
+    User.objects.filter(id=uid).update(avatar=avatar_url)
+    return JsonResponse({'code': 0, 'data': avatar_url})
+

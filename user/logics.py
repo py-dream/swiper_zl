@@ -38,4 +38,5 @@ def send_vcode(phonenum):
     print('随机码：', vcode)
     cache.set(key, vcode, 600)  # 将验证码添加到缓存，并多设置一些时间
 
-    return send_sms(phonenum, vcode)  # 向用户手机发送验证码
+    # return send_sms(phonenum, vcode)  # 向用户手机发送验证码
+    return True

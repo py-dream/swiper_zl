@@ -6,6 +6,7 @@ class AutherMiddleware(MiddlewareMixin):
     '''登录验证中间件'''
 
     white_list = [
+        '/'
         '/api/user/vcode/fetch',
         '/api/user/vcode/submit',
         '/qiniu/callback'
