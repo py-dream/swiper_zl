@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.core.cache import cache
-
+from libs.http import render_json
 from user.logics import send_vcode
 from user.models import User
 from user.models import Profile
@@ -14,9 +14,9 @@ def fetch_vcode(request):
     phonenum = request.GET.get('phonenum')
     print("电话：",phonenum)
     if send_vcode(phonenum):
-        return JsonResponse({'code': 0, 'data': None})
+        return render_json()
     else:
-        return JsonResponse({'code': 1000, 'data': '验证码发送失败'})
+        return JsonResponse(data='验证码发送失败',code=1000)
 
 
 def submit_vcode(request):
@@ -37,16 +37,16 @@ def submit_vcode(request):
         # 在 Session 中记录用户登录的状态
         request.session['uid'] = user.id
 
-        return JsonResponse({'code': 0, 'data': user.to_dict()})
+        return JsonResponse(data=user.to_dict())
     else:
-        return JsonResponse({'code': 1001, 'data': '验证码错误'})
+        return JsonResponse(data='验证码错误',code = 1001)
 
 
 def show_profile(request):
     '''查看个人资料'''
     uid = request.session['uid']
     profile,_ = User.objects.get_or_create(id=uid)
-    return JsonResponse({'code':0,'data':profile.to_dict()})
+    return JsonResponse(data=profile.to_dict())
 
 
 def update_profile(request):
@@ -63,12 +63,12 @@ def update_profile(request):
         User.objects.filter(id=uid).update(**user_form.cleaned_data)
         Profile.objects.update_or_create(id = uid,defaults=profile_form.cleaned_data)
 
-        return JsonResponse({'code':0,'data':None})
+        return JsonResponse()
     else:
         err = {}
         err.update(user_form.errors)
         err.update(profile_form.errors)
-        return JsonResponse({'code':1003,'data':err})
+        return JsonResponse(data=err,code=1003)
 
 
 def qn_token(request):
@@ -91,5 +91,9 @@ def qn_callback(request):
     key = request.POST.get('key')
     avatar_url = get_res_url(key)
     User.objects.filter(id=uid).update(avatar = avatar_url)
-    return JsonResponse({'code':0,'data':avatar_url})
+    return JsonResponse(data=avatar_url)
+
+
+
+
 
