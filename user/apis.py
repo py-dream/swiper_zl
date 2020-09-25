@@ -6,6 +6,8 @@ from user.models import User
 from user.models import Profile
 from user.forms import UserForm
 from user.forms import ProfileForm
+from libs.qn_cloud import get_token
+from libs.qn_cloud import get_res_url
 
 def fetch_vcode(request):
     '''给用户发送验证码'''
@@ -43,7 +45,7 @@ def submit_vcode(request):
 def show_profile(request):
     '''查看个人资料'''
     uid = request.session['uid']
-    profile = User.objects.get_or_create(id=uid)
+    profile,_ = User.objects.get_or_create(id=uid)
     return JsonResponse({'code':0,'data':profile.to_dict()})
 
 
@@ -71,9 +73,23 @@ def update_profile(request):
 
 def qn_token(request):
     '''获取七牛云 Token'''
-    return JsonResponse()
+    uid = request.session['uid']
+    filename = f'Avatar-{uid}'
+    token = get_token(uid,filename)
+    return JsonResponse({
+        'code':0,
+        'data':{
+            'token':token,
+            'key':filename
+        }
+    })
 
 
 def qn_callback(request):
     '''七牛云回调接口'''
-    return JsonResponse()
+    uid = request.POST.get('uid')
+    key = request.POST.get('key')
+    avatar_url = get_res_url(key)
+    User.objects.filter(id=uid).update(avatar = avatar_url)
+    return JsonResponse({'code':0,'data':avatar_url})
+
