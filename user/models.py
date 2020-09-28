@@ -1,4 +1,8 @@
+import datetime
+
 from django.db import models
+
+from vip.models import Vip
 
 
 class User(models.Model):
@@ -24,12 +28,36 @@ class User(models.Model):
     avatar = models.CharField(max_length=256, verbose_name='个人形象')
     location = models.CharField(max_length=10, choices=LOCATIONS,default='上海',verbose_name='常居地')
 
+    vip_id = models.IntegerField(default=1,verbose_name='用户购买的VIP的ID')
+    vip_expire = models.DateTimeField(default='3000-12-31',verbose_name='VIP的过期时间')
+
+
     @property
     def get_my_profile(self):
         '''当前用户对应的Profile'''
         if not hasattr(self,'_profile'):
             self._profile, _ = Profile.objects.get_or_create(id=self.id)
         return self._profile
+
+    @property
+    def vip(self):
+        '''当前用户对应的 Vip'''
+        # 检查当前会员是否过期
+        now = datetime.datetime.now()
+        if now >= self.vip_expire:
+            self.set_vip(1)  # 强制设置成非会员
+
+        if not hasattr(self, '_vip'):
+            self._vip = Vip.objects.get(id=self.vip_id)
+        return self._vip
+
+    def set_vip(self, vip_id):
+        '''设置当前用户的 VIP'''
+        vip = Vip.objects.get(id=vip_id)
+        self.vip_id = vip_id
+        self.vip_expire = datetime.datetime.now() + datetime.timedelta(vip.duration)
+        self._vip = vip
+        self.save()
 
     def to_dict(self):
         return {
@@ -41,6 +69,7 @@ class User(models.Model):
             'avatar': self.avatar,
             'location': self.location,
         }
+
 class Profile(models.Model):
     '''用户交友资料'''
 

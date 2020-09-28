@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'user',
     'social',
+    'vip',
 ]
 
 MIDDLEWARE = [

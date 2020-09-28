@@ -2,6 +2,8 @@ from libs.http import render_json
 from social import logics
 from social.models import Friend
 from user.models import User
+from vip.logics import perm_required
+
 
 def rcmd_users(request):
     '''获取推荐用户'''
@@ -17,6 +19,7 @@ def like(request):
     return render_json({'is_matched': matched})
 
 
+@perm_required('superlike')
 def superlike(request):
     '''超级喜欢（上滑）'''
     sid = int(request.POST.get('sid'))
@@ -31,12 +34,14 @@ def dislike(request):
     return render_json()
 
 
+@perm_required('rewind')
 def rewind(request):
     '''反悔'''
     logics.rewind_last_swipe(request.uid)
     return render_json()
 
 
+@perm_required('show_fans')
 def show_fans(request):
     '''查看喜欢过我的人'''
     fans = logics.find_my_fans(request.uid)
@@ -47,6 +52,6 @@ def show_fans(request):
 def show_friends(request):
     '''查看好友'''
     fid_list = Friend.friend_ids(request.uid)
-    show_friends = User.objects.filter(id__in = fid_list)
-    user_data = [u.to_dict() for u in show_friends]
+    friends = User.objects.filter(id__in=fid_list)
+    user_data = [u.to_dict() for u in friends]
     return render_json(user_data)
