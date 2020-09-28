@@ -4,6 +4,7 @@ from user.models import User
 
 def perm_required(perm_name):
     '''检查当前用户购买的 VIP 是否具有某权限'''
+
     def deco(view_func):
         def wrapper(request, *args, **kwargs):
             # 获取当前用户
@@ -15,4 +16,5 @@ def perm_required(perm_name):
             else:
                 raise PermissionErr
         return wrapper
+
     return deco

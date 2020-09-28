@@ -100,6 +100,7 @@ def rewind_last_swipe(uid):
 
     """反悔上一次滑动"""
     now = datetime.datetime.now()
+    print(type(now),'now11111111111111',now)
     # 检查今天是否已经反悔3次
     rewind_key = keys.REWIND_TIMES_K % (now.date(),uid)
     rewind_times = rds.get(rewind_key, 0)
@@ -108,9 +109,10 @@ def rewind_last_swipe(uid):
 
     # 找到最后一次的滑动
     last_swipe = Swiped.objects.filter(uid=uid).latest('stime')  # **************************
-
+    print(type(last_swipe),'last_swipe1111111111111111',last_swipe.stime)
     # 检查最后一次滑动是否在5分钟内
     time_past = (now - last_swipe.stime).total_seconds()
+    print(type(time_past),'time_past1111111111',time_past)
     if time_past >= config.REWIND_TIMEOUT:
         raise errors.RewindTimeout
 
