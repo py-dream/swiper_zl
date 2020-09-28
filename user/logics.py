@@ -23,7 +23,7 @@ def random_code(length=6):
     return ''.join(nums)
 
 
-
+@celery_app.task
 def send_vcode(phonenum):
     '''给用户发送短信验证码'''
     # 验证手机号

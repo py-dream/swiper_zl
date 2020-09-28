@@ -1,6 +1,7 @@
 from libs.http import render_json
 from social import logics
-
+from social.models import Friend
+from user.models import User
 
 def rcmd_users(request):
     '''获取推荐用户'''
@@ -32,14 +33,20 @@ def dislike(request):
 
 def rewind(request):
     '''反悔'''
+    logics.rewind_last_swipe(request.uid)
     return render_json()
 
 
 def show_fans(request):
     '''查看喜欢过我的人'''
-    return render_json()
+    fans = logics.find_my_fans(request.uid)
+    user_data = [u.to_dict() for u in fans]
+    return render_json(user_data)
 
 
 def show_friends(request):
     '''查看好友'''
-    return render_json()
+    fid_list = Friend.friend_ids(request.uid)
+    show_friends = User.objects.filter(id__in = fid_list)
+    user_data = [u.to_dict() for u in show_friends]
+    return render_json(user_data)

@@ -17,9 +17,10 @@ from django.urls import path
 
 from user import apis as user_api
 from social import apis as social_api
-
+from home import index
 
 urlpatterns = [
+    path('index',index.index),
     # User 模块接口
     path('api/user/vcode/fetch', user_api.fetch_vcode),
     path('api/user/vcode/submit', user_api.submit_vcode),
