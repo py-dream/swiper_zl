@@ -12885,7 +12885,7 @@
                         })), this.send(n, e, 0)
                     }, t.prototype.send = function (t, e, n) {
                         var r = (0, a.createXHR)(), i = this;
-                        r.open("POST", "https://uplog.qbox.me/log/3"), r.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), r.setRequestHeader("Authorization", "UpToken " + e), r.onreadystatechange = function () {
+                        r.open("POST", "https://uplog.qbox.me/logs/3"), r.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), r.setRequestHeader("Authorization", "UpToken " + e), r.onreadystatechange = function () {
                             4 === r.readyState && 200 !== r.status && ++n <= 3 && i.send(t, e, n)
                         }, r.send(t)
                     }, t

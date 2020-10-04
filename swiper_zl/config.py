@@ -16,4 +16,13 @@ QN_SECRET_KEY = 'ZItL_NPEO_aGk0kiHHmWT9D5_XJ3tQjHIlBzyTqh'
 QN_CALLBACK_URL = 'http://123.56.134.103/qiniu/callback'
 QN_CALLBACK_DOMAIN = '123.56.134.103'
 
+# Redis 配置
+REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 2,
+}
 
+# 反悔功能相关配置
+REWIND_TIMES = 3         # 每日反悔次数
+REWIND_TIMEOUT = 5 * 60  # 反悔超时时间
