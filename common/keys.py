@@ -6,3 +6,5 @@ FIRST_RCMD_Q = 'FirstRcmdQ-%s'  # 优先推荐队列, 拼接用户 uid
 REWIND_TIMES_K = 'RewindTimes-%s-%s'  # 每日反悔次数，拼接日期和uid
 
 PROFILE_K = 'Profile-%s'  # 用户交友资料的 Key，拼接 Profile.id
+
+HOT_RANK = 'HOT_RANK'

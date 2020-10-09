@@ -26,3 +26,14 @@ REDIS = {
 # 反悔功能相关配置
 REWIND_TIMES = 3         # 每日反悔次数
 REWIND_TIMEOUT = 5 * 60  # 反悔超时时间
+
+# 滑动积分
+SWIPE_SCORE = {
+    'like': 5,
+    'superlike': 7,
+    'dislike': -5
+}
+
+
+# 排行榜数量
+RANK_NUM = 50

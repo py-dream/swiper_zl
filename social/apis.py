@@ -2,6 +2,7 @@ from libs.http import render_json
 from social import logics
 from social.logics import superlike_someone, like_someone, dislike_someone, rewind_last_swiper, find_my_fans
 from social.models import Friend
+from swiper_zl.config import RANK_NUM
 from user.models import User
 from vip.logics import perm_required
 
@@ -56,3 +57,10 @@ def show_friends(request):
     friends = User.objects.filter(id__in=friends_list)
     user_data = [friend.to_dict() for friend in friends]
     return render_json(user_data)
+
+
+def hot_rank(request):
+    """获取排行前N的用户数据"""
+
+    rank_data = logics.get_top_n(RANK_NUM)
+    return render_json(rank_data)

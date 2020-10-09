@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.db.models import query
 
@@ -15,13 +17,13 @@ def get(self, *args, **kwargs):
     if pk is not None:
         key = 'Model-%s-%s' % (cls_name, pk)
         model_obj = rds.get(key, pk)
-        print('缓存')
+        # print('缓存')
         if isinstance(model_obj, self.model):
             return model_obj
 
     # 从数据库里面取
     model_obj = self._get(*args, **kwargs)
-    print("数据库")
+    # print("数据库")
     # 将数据写入缓存
     key = 'Model-%s-%s' % (cls_name, model_obj.pk)
     rds.set(key, model_obj)
@@ -47,9 +49,33 @@ def save(self, force_insert=False, force_update=False, using=None,
     rds.set(key, self)
 
 
+def to_dict(self, exclude=()):
+    """将用户转换成字典"""
+
+    attr_dict = {}
+
+    # 找到对象身上所有字段名称
+    for fielsd in self._meta.fields:
+        if fielsd.attname in exclude:
+            continue
+
+        # 找到字段名对应的值
+        value = getattr(self, fielsd.attname)
+
+        # 将data和datatime类型的值转成字符串类型，防止json序列化报错
+        if isinstance(value, (datetime.datetime, datetime.date)):
+            value = str(value)
+
+        attr_dict[fielsd.attname] = value
+
+    return attr_dict
+
+
 def path_orm():
     query.QuerySet._get = query.QuerySet.get
     query.QuerySet.get = get
 
     models.Model._save = models.Model.save
-    models.ManyToOneRel.save = save
+    models.Model.save = save
+
+    models.Model.to_dict = to_dict

@@ -6,6 +6,7 @@ from common import keys, errors
 from common.keys import REWIND_TIMES_K
 from libs.cache import rds
 from social.models import Swiped, Friend
+from swiper_zl import config
 from swiper_zl.config import REWIND_TIMEOUT, REWIND_TIMES
 from user.models import Profile, User
 
@@ -61,6 +62,9 @@ def superlike_someone(uid, sid):
     # 删除优先推进列表
     rds.lrem(keys.FIRST_RCMD_Q % uid, count=0, value=sid)
 
+    # 给别滑动者添加积分
+    rds.zincrby(keys.HOT_RANK, config.SWIPE_SCORE['superlike'], sid)
+
     # 检查对方是否喜欢自己
     liked = Swiped.is_like(sid, uid)
 
@@ -80,6 +84,8 @@ def like_someone(uid, sid):
     Swiped.swipe(uid, sid, 'like')
     # 强制删除优先推荐队列中的sid
     rds.lrem(keys.FIRST_RCMD_Q % uid, count=0, value=sid)
+    # 给别滑动者添加积分
+    rds.zincrby(keys.HOT_RANK, config.SWIPE_SCORE['like'], sid)
     # 检查对方是否喜欢自己
     liked = Swiped.is_like(sid, uid)
     if liked:
@@ -95,6 +101,9 @@ def dislike_someone(uid, sid):
 
     # 强制删除优选队列sid
     rds.lrem(keys.FIRST_RCMD_Q % uid, 0, sid)
+
+    # 给别滑动者添加积分
+    rds.zincrby(keys.HOT_RANK, config.SWIPE_SCORE['dislike'], sid)
 
 
 def rewind_last_swiper(uid):
@@ -148,3 +157,28 @@ def find_my_fans(uid):
     user = User.objects.filter(id__in=fans_id_list)
 
     return user
+
+
+def get_top_n(num):
+    """获取排行榜前num原始数据"""
+    # 从redis中取出前num数据
+    origin_rank = rds.zrevrange(keys.HOT_RANK, 0, num - 1, withscores=True)
+    # 将原始数据转化乘int类型
+    cleaned_rank = [[int(uid), int(score)] for uid, score in origin_rank]
+
+    # 取出前num个用户
+    uid_list = [uid for uid, _ in cleaned_rank]
+    users = User.objects.filter(id__in=uid_list)
+    users = sorted(users, key=lambda user: uid_list.index(user.id))
+
+    # 整理用户数据
+    rank_data = []
+    for index, (_, score) in enumerate(cleaned_rank):
+        rank = index + 1
+        user = users[index]
+        user_data = user.to_dict(exclude=['phonenum', 'birthday', 'location',
+                                          'vip_id', 'vip_expire'])
+        user_data['rank'] = rank
+        user_data['score'] = score
+        rank_data.append(user_data)
+    return rank_data

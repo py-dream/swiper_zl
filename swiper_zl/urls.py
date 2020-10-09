@@ -30,9 +30,10 @@ urlpatterns = [
 
     # social模块接口
     path('api/social/rcmd', social_api.rcmd_users),
-    path('api/social/superlike',social_api.superlike),
-    path('api/social/like',social_api.like),
-    path('api/social/rewind',social_api.rewind),
-    path('api/social/show_fans',social_api.show_fans),
-    path('api/social/show_friends',social_api.show_friends),
+    path('api/social/superlike', social_api.superlike),
+    path('api/social/like', social_api.like),
+    path('api/social/rewind', social_api.rewind),
+    path('api/social/show_fans', social_api.show_fans),
+    path('api/social/show_friends', social_api.show_friends),
+    path('api/social/rank', social_api.hot_rank),
 ]
